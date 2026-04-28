@@ -1,0 +1,27 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# Kotlin
+*.kotlin_module
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Starter framework artifacts
+# (the framework writes test artifacts, downloaded IDE installers, and logs
+# under these directories — they should never be committed)
+system/
+config/
+logs/
+ide-starter/
+out-test/
