@@ -14,9 +14,12 @@ import com.intellij.ide.starter.ide.IdeProductProvider
 import com.intellij.ide.starter.models.TestCase
 import com.intellij.ide.starter.project.GitHubProject
 import com.intellij.ide.starter.runner.Starter
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.Timeout
+import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
@@ -24,11 +27,16 @@ import kotlin.time.Duration.Companion.seconds
 class ChangelistsSettingsTest {
 
     /**
-     * Settings -> Version Control -> Changelists -> 'Create changelists automatically' can be enabled
+     * Integration UI test for IntelliJ IDEA's Changelists settings page.
+     *
+     * Drives a real IDE through Settings → Version Control → Changelists,
+     * toggles the "Create changelists automatically" checkbox, and applies.
+     * Built on the JetBrains intellij-ide-starter framework + Driver SDK.
      */
     @Test
-    @DisplayName("Full UI Test")
-    fun fullTest() {
+    @DisplayName("Settings → Version Control → Changelists")
+    @Timeout(value = 15, unit = TimeUnit.MINUTES)
+    fun enableCreateChangelistsAutomatically() {
         val testContext = Starter.newContext(
             "changelists-settings-test/enable-create-changelists-automatically",
             TestCase(
@@ -44,7 +52,7 @@ class ChangelistsSettingsTest {
                 addSystemProperty("user.country", "US")
             }
 
-        testContext.runIdeWithDriver(launchName = "FullTest").useDriverAndCloseIde {
+        testContext.runIdeWithDriver().useDriverAndCloseIde {
             waitForIndicators(5.minutes)
 
             ideFrame {
@@ -69,11 +77,15 @@ class ChangelistsSettingsTest {
                     if (!createAutomatically.isSelected()) {
                         createAutomatically.click()
                     }
-                    assertTrue(createAutomatically.isSelected())
+                    assertTrue(createAutomatically.isSelected()) {
+                        "checkbox should be selected after click."
+                    }
 
                     button("OK").click()
                 }
-                assertTrue(!settingsDialog.present())
+                assertFalse(settingsDialog.present()) {
+                    "Settings dialog should be dismissed after clicking OK."
+                }
             }
         }
     }
